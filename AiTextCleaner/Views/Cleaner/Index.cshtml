@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Очистка текста";
+}
+
+<h2>Очистка текста от GPT-следов</h2>
+
+<form method="post" asp-action="CleanText">
+    <div class="mb-3">
+        <label for="inputText" class="form-label">Введите текст</label>
+        <textarea name="inputText" class="form-control" id="inputText" rows="10" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Очистить и проанализировать</button>
+</form>

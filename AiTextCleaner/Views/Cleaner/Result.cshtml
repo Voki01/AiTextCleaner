@@ -1,0 +1,101 @@
+﻿@model AiTextCleaner.Models.CleanResultViewModel
+
+@{
+    ViewData["Title"] = "Результат очистки";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Результат очистки текста</h2>
+
+    <!-- 🔁 Повторный ввод текста -->
+    <form method="post" asp-action="CleanText">
+        <div class="mb-3">
+            <label for="inputText" class="form-label">🔁 Вставьте новый текст для проверки:</label>
+            <textarea name="inputText" class="form-control" rows="5">@Model.OriginalText</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Проверить ещё раз</button>
+    </form>
+
+    <hr />
+
+    <!-- Оригинальный текст -->
+    <div class="mb-3">
+        <h5>Оригинальный текст:</h5>
+        <div class="border p-3 bg-light" style="white-space: pre-wrap;">@Model.OriginalText</div>
+    </div>
+
+    <!-- Очищенный текст -->
+    <div class="mb-3">
+        <h5>Очищенный текст:</h5>
+        <textarea id="cleanedText" class="form-control" rows="6" readonly>@Model.CleanedText</textarea>
+        <button class="btn btn-outline-primary mt-2" onclick="copyText()">📋 Копировать очищенный текст</button>
+    </div>
+
+    <!-- Удалённые элементы -->
+    <div class="mb-3">
+        <h5>Удалены элементы:</h5>
+        <ul>
+            @foreach (var item in Model.RemovedItems)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    </div>
+
+    <!-- Подсвеченные фразы -->
+    @if (Model.HighlightedPhrases?.Count > 0)
+    {
+        <div class="mb-3">
+            <h5>Обнаруженные GPT-фразы:</h5>
+            <ul>
+                @foreach (var phrase in Model.HighlightedPhrases)
+                {
+                    <li><mark>@phrase</mark></li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Прогресс-бар GPT -->
+    <div class="mb-3">
+        <h5>Оценка стиля GPT:</h5>
+        <div class="progress" style="height: 25px;">
+            <div class="progress-bar
+                @(Model.GptProbability < 30 ? "bg-success" : Model.GptProbability < 60 ? "bg-warning text-dark" : "bg-danger")"
+                 role="progressbar"
+                 style="width: @Model.GptProbability%"
+                 aria-valuenow="@Model.GptProbability"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                @Model.GptProbability.ToString("F0")%
+            </div>
+        </div>
+        <ul class="mt-2">
+            @foreach (var note in Model.AiNotes)
+            {
+                <li>@note</li>
+            }
+        </ul>
+    </div>
+
+    <!-- Статистика -->
+    <div class="mb-3">
+        <h5>Статистика:</h5>
+        <ul>
+            <li>Оригинал: @Model.OriginalWordCount слов, @Model.OriginalCharCount символов</li>
+            <li>После очистки: @Model.CleanedWordCount слов, @Model.CleanedCharCount символов</li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyText() {
+            const textArea = document.getElementById('cleanedText');
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(textArea.value);
+            alert("Текст скопирован в буфер обмена!");
+        }
+    </script>
+}
