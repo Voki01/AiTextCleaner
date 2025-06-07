@@ -93,9 +93,15 @@
         function copyText() {
             const textArea = document.getElementById('cleanedText');
             textArea.select();
-            textArea.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(textArea.value);
-            alert("Текст скопирован в буфер обмена!");
+            textArea.setSelectionRange(0, 99999); // для мобильных
+
+            try {
+                const successful = document.execCommand('copy');
+                alert(successful ? "Скопировано!" : "Не удалось скопировать.");
+            } catch (err) {
+                alert("Ошибка при копировании: " + err);
+            }
         }
     </script>
 }
+
